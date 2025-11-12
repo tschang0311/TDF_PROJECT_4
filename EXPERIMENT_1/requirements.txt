@@ -1,0 +1,4 @@
+pygame>=2.5.0
+pyserial>=3.5
+tkinter; platform_system=="Windows"
+tk; platform_system!="Windows"
