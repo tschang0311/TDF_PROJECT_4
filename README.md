@@ -1,5 +1,6 @@
 TECHNOLOGY DESIGN FOUNDATIONS
-Project 4: Designing to improve the World
+
+PROJECT 4: Designing to improve the World
 
 Bryce Parsons, Kenya Foster, Thomas Chang
 
