@@ -1,0 +1,153 @@
+/*
+ * ESP32-S2 TFT Feather - Basic Channel Display UI
+ * 
+ * Minimal UI optimized for USB power only (no external power required)
+ * 
+ * Hardware: Adafruit ESP32-S2 TFT Feather
+ * Display: ST7789 TFT (240x135 pixels typical)
+ */
+
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <SPI.h>
+
+// TFT Display Pin Definitions (ESP32-S2 TFT Feather)
+#define TFT_CS    5   // Chip select
+#define TFT_RST   40  // Reset pin
+#define TFT_DC    39  // Data/Command pin
+#define TFT_BACKLIGHT 45  // Backlight pin
+
+// Display dimensions (portrait orientation)
+#define SCREEN_WIDTH  135
+#define SCREEN_HEIGHT 240
+
+// UI layout dimensions
+#define HEADER_HEIGHT 25   // Height of header bar
+#define FOOTER_HEIGHT 20   // Height of footer bar
+#define TRACK_START_Y (HEADER_HEIGHT + 5)  // Y position where tracks start
+#define TRACK_SPACING 15   // Vertical spacing between tracks
+#define TEXT_PADDING 5     // Horizontal padding for text
+#define MAX_TRACKS 6       // Maximum number of tracks to display
+
+// Initialize TFT display
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+
+void setup() {
+  // Initialize serial for debugging
+  Serial.begin(115200);
+  delay(100);
+  Serial.println("ESP32-S2 Basic Display Starting...");
+
+  // Initialize SPI bus
+  SPI.begin();
+  delay(50);
+  
+  // Initialize backlight pin - keep it at lower brightness to save power
+  pinMode(TFT_BACKLIGHT, OUTPUT);
+  digitalWrite(TFT_BACKLIGHT, HIGH);  // Enable backlight at full (or use PWM for dimming)
+  
+  // Initialize TFT display - vertical orientation
+  tft.init(135, 240);
+  delay(100);
+  
+  // Set rotation for vertical display
+  tft.setRotation(3);
+  delay(50);
+  
+  // Clear screen with white background - vertical orientation
+  tft.fillScreen(ST77XX_WHITE);
+  
+  // Draw basic UI
+  drawBasicUI();
+  
+  Serial.println("Display ready!");
+}
+
+void loop() {
+  // Main loop - UI is static
+  delay(1000);
+}
+
+/**
+ * Draws a full-screen UI with header, track list, and footer
+ * Fills the entire screen with useful information
+ */
+void drawBasicUI() {
+  // Fill entire screen with white background - vertical orientation
+  tft.fillScreen(ST77XX_WHITE);
+  
+  // Create colors
+  uint16_t darkGrayColor = ((64 & 0xF8) << 8) | ((64 & 0xFC) << 3) | (64 >> 3);
+  uint16_t lightGrayColor = ((200 & 0xF8) << 8) | ((200 & 0xFC) << 3) | (200 >> 3);
+  
+  // Draw header bar with background - full width
+  tft.fillRect(0, 0, SCREEN_WIDTH, HEADER_HEIGHT, darkGrayColor);
+  tft.drawRect(0, 0, SCREEN_WIDTH, HEADER_HEIGHT, ST77XX_BLACK);
+  
+  // Draw "Channel 1" title in header
+  tft.setTextSize(2);
+  tft.setTextColor(ST77XX_WHITE, darkGrayColor);
+  tft.setCursor(TEXT_PADDING, 5);
+  tft.print("Channel 1");
+  
+  // Draw status indicator in header (right side)
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_WHITE, darkGrayColor);
+  tft.setCursor(SCREEN_WIDTH - 50, 8);
+  tft.print("PLAY");
+  
+  // Draw separator line below header - full width
+  tft.drawLine(0, HEADER_HEIGHT, SCREEN_WIDTH, HEADER_HEIGHT, ST77XX_BLACK);
+  
+  // Draw track list area with background - full width
+  int trackAreaHeight = SCREEN_HEIGHT - HEADER_HEIGHT - FOOTER_HEIGHT;
+  tft.fillRect(0, HEADER_HEIGHT + 1, SCREEN_WIDTH, trackAreaHeight - 1, ST77XX_WHITE);
+  
+  // Draw track entries
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_BLACK, ST77XX_WHITE);
+  
+  for (int i = 0; i < MAX_TRACKS; i++) {
+    int trackY = TRACK_START_Y + (i * TRACK_SPACING);
+    
+    // Draw track background (alternating for better visibility) - full width
+    if (i % 2 == 0) {
+      tft.fillRect(0, trackY - 2, SCREEN_WIDTH, TRACK_SPACING - 1, lightGrayColor);
+    } else {
+      tft.fillRect(0, trackY - 2, SCREEN_WIDTH, TRACK_SPACING - 1, ST77XX_WHITE);
+    }
+    
+    // Draw track number
+    tft.setCursor(TEXT_PADDING, trackY);
+    tft.print(i + 1);
+    tft.print(".");
+    
+    // Draw track name - extend further to use more width
+    tft.setCursor(TEXT_PADDING + 15, trackY);
+    tft.print("Track.mp3");
+    
+    // Draw track duration (right aligned)
+    tft.setCursor(SCREEN_WIDTH - 40, trackY);
+    tft.print("3:24");
+  }
+  
+  // Draw separator line above footer - full width
+  tft.drawLine(0, SCREEN_HEIGHT - FOOTER_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_HEIGHT, ST77XX_BLACK);
+  
+  // Draw footer bar - full width
+  tft.fillRect(0, SCREEN_HEIGHT - FOOTER_HEIGHT, SCREEN_WIDTH, FOOTER_HEIGHT, darkGrayColor);
+  tft.drawRect(0, SCREEN_HEIGHT - FOOTER_HEIGHT, SCREEN_WIDTH, FOOTER_HEIGHT, ST77XX_BLACK);
+  
+  // Draw footer text
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_WHITE, darkGrayColor);
+  tft.setCursor(TEXT_PADDING, SCREEN_HEIGHT - FOOTER_HEIGHT + 6);
+  tft.print("Firmware v1.0");
+  
+  // Draw scroll indicator in footer (right side)
+  tft.setCursor(SCREEN_WIDTH - 30, SCREEN_HEIGHT - FOOTER_HEIGHT + 6);
+  tft.print("6/10");
+  
+  // Draw border around entire screen - full width
+  tft.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, ST77XX_BLACK);
+}
