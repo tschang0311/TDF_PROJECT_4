@@ -1,0 +1,63 @@
+filter Haus.py (Highlevel Code)
+
+Struct channel {
+int song double time-stamp list songs
+int filter.
+int channel bod play-pause
+}
+
+
+LOAD (int song, list songs, int channel)
+init struct channel
+
+
+PLAY ( channel)
+Check pause play play (time-stamp)
+
+
+Choose-F (list filters, int filter, struct channel)
+update channel.Filter
+
+
+APPLY_ F(struct channel, int intensity)
+apply (filter to channel)
+
+init int intensity
+
+
+init model ( )
+
+
+start-img-cap (int cam)
+return frame
+
+
+run model (frame)
+intensity = pose
+return intensity
+
+
+establish connect ( )
+get - ESP32()
+Channel = 0|1
+song = int
+LOAD()
+
+if loaded
+PLAN()
+
+
+CHOOSE - F()
+
+
+
+
+Filterhaus.ino
+
+
+Pause/Play
+Channel Select
+Browse songs	
+SelectSong
+Browse Filters
+Select Filter
