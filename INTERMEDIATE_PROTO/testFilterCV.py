@@ -32,7 +32,7 @@ AUDIO_FILE = "./songs/song10.mp3"
 BLOCKSIZE = 1024
 
 VIDEO_SOURCE = 0
-YOLO_MODEL_PATH = "yolov8n-pose.pt"
+YOLO_MODEL_PATH = "best.pt"
 PERSON_CLASS_ID = 0  # unused for hand model, but kept for completeness
 
 CONF_THRESH = 0.4
